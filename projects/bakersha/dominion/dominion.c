@@ -1216,6 +1216,21 @@ int updateCoins(int player, struct gameState *state, int bonus)
  *************** REFACTORED CARD EFFECTS ***************
  *******************************************************/
 
+/*******************************************************
+ * Changes made by Sharaya Baker
+ * Modifications originally made in the Spring '18 term
+ * Code has been reviewed and clarifying comments have
+ * been added.
+ * First changed 04/15/2018
+ * Last changed 10/14/2018
+ *******************************************************/
+
+
+/******************************************************* 
+ * Sharaya Baker: Introduced bug that causes  
+ * drawntreasure to only increment if copper is drawn.
+ *******************************************************/
+
 int adventurerRefactor(int currentPlayer, int temphand[], int z, struct gameState *state)
 {
   int drawntreasure=0;
@@ -1227,7 +1242,7 @@ int adventurerRefactor(int currentPlayer, int temphand[], int z, struct gameStat
     }
     drawCard(currentPlayer, state);
     cardDrawn = state->hand[currentPlayer][state->handCount[currentPlayer]-1];//top card of hand is most recently drawn card.
-    //Introduced bug in "if" statement so that drawntreasure will only increment for copper.
+    // Sharaya Baker: BUG
     if (cardDrawn == copper || (cardDrawn == silver && cardDrawn == gold))
       drawntreasure++;
     else{
@@ -1244,6 +1259,10 @@ int adventurerRefactor(int currentPlayer, int temphand[], int z, struct gameStat
   }
   return 0;
 }
+
+/******************************************************* 
+ * Sharaya Baker: No bugs introduced
+ *******************************************************/
 
 int council_roomRefactor(int currentPlayer, int handPos, struct gameState *state)
 {
@@ -1272,6 +1291,13 @@ int council_roomRefactor(int currentPlayer, int handPos, struct gameState *state
   return 0;  
 }
 
+
+/******************************************************* 
+ * Sharaya Baker: Introduced bug by changing choice2 
+ * to choice1. Should result in the gained card also 
+ * being trashed.
+ *******************************************************/
+
 int mineRefactor(int currentPlayer, int choice1, int choice2, int handPos, struct gameState *state)
 {
   int j = state->hand[currentPlayer][choice1];  //store card we will trash
@@ -1291,8 +1317,7 @@ int mineRefactor(int currentPlayer, int choice1, int choice2, int handPos, struc
     return -1;
   }
 
-  // Introduced bug by changing choice2 to choice1. 
-  //Should result in the gained card also being trashed.
+  // Sharaya Baker: BUG
   gainCard(choice1, state, 2, currentPlayer);
 
   //discard card from hand
@@ -1312,21 +1337,29 @@ int mineRefactor(int currentPlayer, int choice1, int choice2, int handPos, struc
   return 0;  
 }
 
+/******************************************************* 
+ * Sharaya Baker: Introduced additional index increment
+ *******************************************************/
+
 int smithyRefactor(int currentPlayer, int handPos, struct gameState *state)
 {
   int i;
   //+3 Cards
-  // Introduced bug: additional index increment
   for (i = 0; i < 3; i++)
   {
     drawCard(currentPlayer, state);
-    i++;
+    i++; // Sharaya Baker: BUG
   }
       
   //discard card from hand
   discardCard(handPos, currentPlayer, state, 0);
   return 0;
 }
+
+/******************************************************* 
+ * Sharaya Baker: Introduced bug to decrement index j 
+ * rather than increment; should cause infinite loop
+ *******************************************************/
 
 int minionRefactor(int currentPlayer, int choice1, int choice2, int handPos, struct gameState *state)
 {
@@ -1370,7 +1403,7 @@ int minionRefactor(int currentPlayer, int choice1, int choice2, int handPos, str
               }
                   
               //draw 4
-              // Introduced bug to decrement index j rather than increment; should cause infinite loop
+              // Sharaya Baker: BUG
               for (j = 0; j < 4; j--)
               {
                 drawCard(i, state);
