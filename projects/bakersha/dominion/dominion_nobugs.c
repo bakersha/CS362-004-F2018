@@ -104,46 +104,51 @@ int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed,
 
   //set number of Kingdom cards
   for (i = adventurer; i <= treasure_map; i++)       	//loop all cards
-  {
-    for (j = 0; j < 10; j++)           		//loop chosen cards
-  	{
-  	  if (kingdomCards[j] == i)
-      {
+    {
+      for (j = 0; j < 10; j++)           		//loop chosen cards
+	{
+	  if (kingdomCards[j] == i)
+	    {
 	      //check if card is a 'Victory' Kingdom card
 	      if (kingdomCards[j] == great_hall || kingdomCards[j] == gardens)
-    		{
-    		  if (numPlayers == 2)
-            { state->supplyCount[i] = 8; } 
-    		  else
-            { state->supplyCount[i] = 12; }
-    		}
-    	  else
-      		{ state->supplyCount[i] = 10; }
-        break;
-      } 
-  	  else    //card is not in the set choosen for the game
-  	    { state->supplyCount[i] = -1; }
+		{
+		  if (numPlayers == 2){ 
+		    state->supplyCount[i] = 8; 
+		  }
+		  else{ state->supplyCount[i] = 12; }
+		}
+	      else
+		{
+		  state->supplyCount[i] = 10;
+		}
+	      break;
+	    }
+	  else    //card is not in the set choosen for the game
+	    {
+	      state->supplyCount[i] = -1;
+	    }
+	}
+
     }
-  }
 
   ////////////////////////
   //supply intilization complete
 
   //set player decks
   for (i = 0; i < numPlayers; i++)
-  {
-    state->deckCount[i] = 0;
-    for (j = 0; j < 3; j++)
     {
-      state->deck[i][j] = estate;
-      state->deckCount[i]++;
+      state->deckCount[i] = 0;
+      for (j = 0; j < 3; j++)
+	{
+	  state->deck[i][j] = estate;
+	  state->deckCount[i]++;
+	}
+      for (j = 3; j < 10; j++)
+	{
+	  state->deck[i][j] = copper;
+	  state->deckCount[i]++;		
+	}
     }
-    for (j = 3; j < 10; j++)
-    {
-      state->deck[i][j] = copper;
-      state->deckCount[i]++;		
-    }
-  }
 
   //shuffle player decks
   for (i = 0; i < numPlayers; i++)
@@ -394,18 +399,17 @@ int isGameOver(struct gameState *state) {
 
   //if three supply pile are at 0, the game ends
   j = 0;
-  for (i = 0; i < 25; i++) 
-  {
-    if (state->supplyCount[i] == 0)
+  for (i = 0; i < 25; i++)
     {
-  	  j++;
-  	}
-  }
-
+      if (state->supplyCount[i] == 0)
+	{
+	  j++;
+	}
+    }
   if ( j >= 3)
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
 
   return 0;
 }
@@ -518,7 +522,8 @@ int getWinners(int players[MAX_PLAYERS], struct gameState *state) {
   return 0;
 }
 
-int drawCard(int player, struct gameState *state){	int count;
+int drawCard(int player, struct gameState *state)
+{	int count;
   int deckCounter;
   if (state->deckCount[player] <= 0){//Deck is empty
     
@@ -1227,8 +1232,7 @@ int adventurerRefactor(int currentPlayer, int temphand[], int z, struct gameStat
     }
     drawCard(currentPlayer, state);
     cardDrawn = state->hand[currentPlayer][state->handCount[currentPlayer]-1];//top card of hand is most recently drawn card.
-    //Introduced bug in "if" statement so that drawntreasure will only increment for copper.
-    if (cardDrawn == copper || (cardDrawn == silver && cardDrawn == gold))
+    if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold)
       drawntreasure++;
     else{
       temphand[z]=cardDrawn;
@@ -1236,7 +1240,6 @@ int adventurerRefactor(int currentPlayer, int temphand[], int z, struct gameStat
       z++;
     }
   }
-  //
   while(z-1>=0){
     state->discard[currentPlayer][state->discardCount[currentPlayer]++]=temphand[z-1]; 
     // discard all cards in play that have been drawn
@@ -1291,9 +1294,7 @@ int mineRefactor(int currentPlayer, int choice1, int choice2, int handPos, struc
     return -1;
   }
 
-  // Introduced bug by changing choice2 to choice1. 
-  //Should result in the gained card also being trashed.
-  gainCard(choice1, state, 2, currentPlayer);
+  gainCard(choice2, state, 2, currentPlayer);
 
   //discard card from hand
   discardCard(handPos, currentPlayer, state, 0);
@@ -1316,11 +1317,9 @@ int smithyRefactor(int currentPlayer, int handPos, struct gameState *state)
 {
   int i;
   //+3 Cards
-  // Introduced bug: additional index increment
   for (i = 0; i < 3; i++)
   {
     drawCard(currentPlayer, state);
-    i++;
   }
       
   //discard card from hand
@@ -1370,8 +1369,7 @@ int minionRefactor(int currentPlayer, int choice1, int choice2, int handPos, str
               }
                   
               //draw 4
-              // Introduced bug to decrement index j rather than increment; should cause infinite loop
-              for (j = 0; j < 4; j--)
+              for (j = 0; j < 4; j++)
               {
                 drawCard(i, state);
               }
