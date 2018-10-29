@@ -2,11 +2,15 @@
 CC=gcc
 CFLAGS=-g -Wall
 
-testme: testme.c
-	gcc -c testme.c $(CFLAGS)
+TARGET=testme
 
-run: testme
-	./testme
+all: $(TARGET)
+
+$(TARGET): $(TARGET).c
+	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).c
+
+run: $(TARGET)
+	./$(TARGET)
 
 clean:
-	rm -f *.o testme.exe	
+	rm -f *.o $(TARGET)	
