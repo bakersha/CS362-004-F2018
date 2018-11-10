@@ -1,33 +1,3 @@
-/*
- Helpful Tips:
-
- An overview of the random generator structure:
- 1. Identify the method under test/ (CUT)
- 2. Identify all the dependencies (parameters)
- 3. Write code to generate random inputs for the chosen method
- 4. Invoke the method (execute the method)
- 5. Check if stopping criterion (like time or number of loops) 
-	is not satisfied go to step 2.
- 
- Note: steps 3:
- a. If the input is a primitive data type, generate a random 
-	primitive value, etc.
- b. If the input is an array, create an array and initialize it 
-	with some random values, etc.
- c. Try to “stay random” but shift the probability space 
-	(e.g., if you choose int numCoppersInDeck = rand() % 20 and int 
-	numAdventurersToPlay = rand() % 10. There must be a logical 
-	reason for choosing 20 and 10). You might look at the coverage 
-	and the code and you see some numbers, or you look at the coverage 
-	and you see that you need to choose such values to cover a 
-	particular code!
- d. You also need to improve your oracles (step 5) (i.e., assertions 
-	"if/print in our case") until you feel that all the problems that 
-	should be caught actually are caught! As you can see it is up to you 
-	whether you want to produce a “rock solid” random generator or just 
-	a random generator.
- */
-
 /*******************************************************
  * Name: 
  * 		randomcardtest1.c
@@ -56,6 +26,7 @@
  *	2. 3 cards should come from his own pile.
  * 	3. No state change should occur for other players.
  * 	4. No state change should occur to the victory card piles and kingdom card piles.
+ *  5. Discard pile should increase by 1.
  */
 
 
@@ -91,6 +62,8 @@ int main() {
     int numT4aF = 0;	
     int numT4bP = 0;
     int numT4bF = 0;	
+	int iterFailContainer[100] = {0};
+	int failCount = 0;
 
     // The variables below came from the cardtest4.c example provided 	
     int handPos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;	
@@ -105,13 +78,13 @@ int main() {
 	printf("------------------- STARTING SMITHY RANDOM TESTS ------------------\n");
 	printf("--------------------------------------------------------------------");	
 
-	for (i = 0; i < 5; i++) {
+	for (i = 1; i < 15000; i++) {
 
 		/* ---------- BEFORE CARD IS PLAYED ---------- */
 		printf("\n\n********** Iteration %d **********\n", i+1);
 
 		// Random seed for cardEffect()
-		int seed = rand() % 1000;
+		int seed = rand();
 		printf("Seed: %d\n", seed); 
 
 		// Get a random number of players between MIN and MAX_PLAYERS
@@ -122,8 +95,9 @@ int main() {
 		// Initialize a game state and player cards
 		initializeGame(numPlayers, k, seed, &testState);	
 
-		// Pick random player to play Smithy
+		// Get random currentPlayer 
 		int currentPlayer = rand() % numPlayers;
+		testState.whoseTurn = currentPlayer;
 		printf("currentPlayer: %d\n", currentPlayer);
 
 		// Number of cards in currentPlayer's hand before playing Smithy
@@ -131,24 +105,20 @@ int main() {
 		int startingHandCount = testState.handCount[currentPlayer];
 		printf("currentPlayer startingHandCount: %d\n", startingHandCount);
 		// Expected number of cards in currentPlayer's hand after playing Smithy
-		int expectedHandCount = startingHandCount + 3;	
+		// Number is 2 instead of 3 to account for discard of smithy
+		int expectedHandCount = startingHandCount + 2;	
 		printf("Expected ending handCount: %d\n", expectedHandCount);
 		// Number of cards in currentPlayer's deck before playing Smithy	
 		testState.deckCount[currentPlayer] = rand() % MAX_DECK;
 		int startingDeckCount = testState.deckCount[currentPlayer];
 		printf("currentPlayer startingDeckCount: %d\n", startingDeckCount); 
-		/* Expected number of cards in currentPlayer's deck after playing Smithy
-		 * This is -4 instead of -3 because of the discardCard() in addition 
-		 * to moving 3 cards from deck to hand	
-		 */ 	
-		int expectedDeckCount = startingDeckCount - 4; 	
+		// Expected number of cards in currentPlayer's deck after playing Smithy
+		int expectedDeckCount = startingDeckCount - 3; 	
 		printf("Expected ending deckCount: %d\n", expectedDeckCount);
 
 		// Starting / ending handCount and deckCount for other players		
 		int otherPlayerStartingHandCount[numPlayers-1];	
 		int otherPlayerStartingDeckCount[numPlayers-1];
-		//int otherPlayerEndingHandCount[numPlayers-1];
-		//int otherPlayerEndingDeckCount[numPlayers-1];			
 
 		// Randomize the starting handCount and deckCount for the other players
 		for (j = 0; j < numPlayers; j++) {
@@ -160,8 +130,8 @@ int main() {
 				printf("Player %d startingHandCount: %d\n", j, otherPlayerStartingHandCount[j]);
 				printf("Player %d startingDeckCount: %d\n", j, otherPlayerStartingDeckCount[j]);
 			} else {
-				otherPlayerStartingHandCount[j] = NULL;
-				otherPlayerStartingDeckCount[j] = NULL;
+				otherPlayerStartingHandCount[j] = 0;
+				otherPlayerStartingDeckCount[j] = 0;
 			}
 		}	
 
@@ -193,6 +163,8 @@ int main() {
 			numT1P++;
 		} else if (testState.handCount[currentPlayer] != expectedHandCount) {
 			numT1F++;
+			//iterFailContainer[failCount] = i;
+			//failCount++;
 		}
 
 		printf("\n------------------------------ Test 2 -----------------------------\n\n");
@@ -204,6 +176,8 @@ int main() {
 			numT2P++;
 		} else if (testState.deckCount[currentPlayer] != expectedDeckCount) {
 			numT2F++;
+			//iterFailContainer[failCount] = i;
+			//failCount++;
 		}
 
 		printf("\n------------------------------ Test 3 -----------------------------\n\n");
@@ -220,6 +194,8 @@ int main() {
 					numT3aP++;
 				} else if (otherPlayerStartingHandCount[j] != testState.handCount[j]) {
 					numT3aF++;
+					iterFailContainer[failCount] = i;
+					failCount++;
 				}
 
 				printf("Expected deckCount, player %d: %d\n", j, otherPlayerStartingDeckCount[j]);
@@ -230,6 +206,8 @@ int main() {
 					numT3bP++;
 				} else if (otherPlayerStartingDeckCount[j] != testState.deckCount[j]) {
 					numT3bF++;
+					iterFailContainer[failCount] = i;
+					failCount++;
 				}
 			}
 		}
@@ -250,6 +228,8 @@ int main() {
 			numT4aP++;
 		} else if (victoryBefore != victoryAfter) {
 			numT4aF++;
+			iterFailContainer[failCount] = i;
+			failCount++;
 		}
 
 		/* This determines the supply of kingdom cards before Smithy is played */	
@@ -266,11 +246,16 @@ int main() {
 			numT4bP++;
 		} else if (kingdomBefore != kingdomAfter) {
 			numT4bF++;
+			iterFailContainer[failCount] = i;
+			failCount++;
 		}		
 
 	}
 
-	printf("------------------ TOTAL PASSED / FAILED TEST CASES ------------------\n\n");
+	printf("\n------------------------------ Test 5 -----------------------------\n\n");
+	printf("Expected: Discard pile increases by 1 ******** UNDER CONSTRUCTION *********\n");	
+
+	printf("\n------------------ TOTAL PASSED / FAILED TEST CASES ------------------\n\n");
 	printf("Test 1 - PASSED: %d\n", numT1P);
 	printf("Test 1 - FAILED: %d\n", numT1F);
 	printf("Test 2 - PASSED: %d\n", numT2P);
@@ -283,6 +268,14 @@ int main() {
 	printf("Test 4a - FAILED: %d\n", numT4aF);	
 	printf("Test 4b - PASSED: %d\n", numT4bP);
 	printf("Test 4b - FAILED: %d\n", numT4bF);		
+
+
+	printf("ITERATIONS WHICH CONTAINED FAILURES -- NOT TEST 1 OR TEST 2:\n");
+	for (i = 0; i < 100; i++) {
+		if (iterFailContainer[i] != 0) {
+			printf("%d\n",iterFailContainer[i]);
+		}
+	}
 
 
 	printf("\n--------------------------------------------------------------------\n");

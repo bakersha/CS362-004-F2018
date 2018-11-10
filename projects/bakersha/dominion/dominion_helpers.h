@@ -12,4 +12,13 @@ int getCost(int cardNumber);
 int cardEffect(int card, int choice1, int choice2, int choice3, 
 	       struct gameState *state, int handPos, int *bonus);
 
+// Adding definitions for refactored card effect code
+int adventurerRefactor(int currentPlayer, int temphand[], int z, struct gameState *state);
+int council_roomRefactor(int currentPlayer, int handPos, struct gameState *state);
+int mineRefactor(int currentPlayer, int choice1, int choice2, int handPos, 
+	struct gameState *state);
+int smithyRefactor(int currentPlayer, int handPos, struct gameState *state);
+int minionRefactor(int currentPlayer, int choice1, int choice2, int handPos, struct gameState *state);
+
+
 #endif
