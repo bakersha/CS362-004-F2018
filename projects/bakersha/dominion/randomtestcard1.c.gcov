@@ -1,0 +1,410 @@
+        -:    0:Source:randomtestcard1.c
+        -:    0:Graph:randomtestcard1.gcno
+        -:    0:Data:randomtestcard1.gcda
+        -:    0:Runs:2
+        -:    0:Programs:1
+        -:    1:/*
+        -:    2: Helpful Tips:
+        -:    3:
+        -:    4: An overview of the random generator structure:
+        -:    5: 1. Identify the method under test/ (CUT)
+        -:    6: 2. Identify all the dependencies (parameters)
+        -:    7: 3. Write code to generate random inputs for the chosen method
+        -:    8: 4. Invoke the method (execute the method)
+        -:    9: 5. Check if stopping criterion (like time or number of loops) 
+        -:   10:	is not satisfied go to step 2.
+        -:   11: 
+        -:   12: Note: steps 3:
+        -:   13: a. If the input is a primitive data type, generate a random 
+        -:   14:	primitive value, etc.
+        -:   15: b. If the input is an array, create an array and initialize it 
+        -:   16:	with some random values, etc.
+        -:   17: c. Try to “stay random” but shift the probability space 
+        -:   18:	(e.g., if you choose int numCoppersInDeck = rand() % 20 and int 
+        -:   19:	numAdventurersToPlay = rand() % 10. There must be a logical 
+        -:   20:	reason for choosing 20 and 10). You might look at the coverage 
+        -:   21:	and the code and you see some numbers, or you look at the coverage 
+        -:   22:	and you see that you need to choose such values to cover a 
+        -:   23:	particular code!
+        -:   24: d. You also need to improve your oracles (step 5) (i.e., assertions 
+        -:   25:	"if/print in our case") until you feel that all the problems that 
+        -:   26:	should be caught actually are caught! As you can see it is up to you 
+        -:   27:	whether you want to produce a “rock solid” random generator or just 
+        -:   28:	a random generator.
+        -:   29: */
+        -:   30:
+        -:   31:/*******************************************************
+        -:   32: * Name: 
+        -:   33: * 		randomcardtest1.c
+        -:   34: * Description: 
+        -:   35: * 		Random test suite for smithy card
+        -:   36: * Author: 
+        -:   37: * 		Sharaya Baker (bakersha) - November 2018
+        -:   38: *******************************************************/
+        -:   39:
+        -:   40:#include "dominion.h"
+        -:   41:#include "dominion_helpers.h"
+        -:   42:#include <string.h>
+        -:   43:#include <stdio.h>
+        -:   44:#include <assert.h>
+        -:   45:#include "rngs.h"
+        -:   46:#include <stdlib.h>
+        -:   47:#include <time.h>
+        -:   48:
+        -:   49:#define TESTCARD "Smithy"
+        -:   50:#define MIN_PLAYERS 2
+        -:   51:/* MAX_HAND, MAX_DECK, MAX_PLAYERS defined in dominion.h */
+        -:   52:
+        -:   53:/*
+        -:   54: * REQUIREMENTS:
+        -:   55: * 	1. Current player should receive exact 3 cards.
+        -:   56: *	2. 3 cards should come from his own pile.
+        -:   57: * 	3. No state change should occur for other players.
+        -:   58: * 	4. No state change should occur to the victory card piles and kingdom card piles.
+        -:   59: */
+        -:   60:
+        -:   61:
+        -:   62:// Test oracle
+function myAssert called 23856 returned 100% blocks executed 100%
+    23856:   63:void myAssert(x,y) {
+    23856:   64:	if(x == y) {
+branch  0 taken 22% (fallthrough)
+branch  1 taken 78%
+     5219:   65:		printf("TEST PASSED!\n");
+call    0 returned 100%
+        -:   66:	} else {
+    18637:   67:		printf("TEST FAILED!\n");
+call    0 returned 100%
+        -:   68:	}
+    23856:   69:}
+        -:   70:
+function main called 2 returned 100% blocks executed 97%
+        2:   71:int main() {
+        -:   72:
+        2:   73:	srand(time(NULL)); // seed rand
+call    0 returned 100%
+call    1 returned 100%
+        -:   74:
+        -:   75:	/* --- Variables ---  */
+        -:   76:	struct gameState testState;	// New instance of gameState
+        2:   77:	int victoryBefore = 0;		// Used to verify no state change occurs
+        2:   78:	int victoryAfter = 0; 		// Used to verify no state change occurs
+        2:   79:	int kingdomBefore = 0; 		// Used to verify no state change occurs
+        2:   80:	int kingdomAfter = 0;		// Used to verify no state change occurs
+        -:   81:	int i, j, n;				// Counters
+        2:   82:	int numT1P = 0; 			// Track the number of pass / fail for Test cases
+        2:   83:	int numT1F = 0;		
+        2:   84:	int numT2P = 0;			
+        2:   85:	int numT2F = 0;	
+        2:   86:	int numT3aP =0;
+        2:   87:	int numT3aF = 0;	
+        2:   88:	int numT3bP = 0;
+        2:   89:	int numT3bF = 0;	
+        2:   90:    int numT4aP = 0;
+        2:   91:    int numT4aF = 0;	
+        2:   92:    int numT4bP = 0;
+        2:   93:    int numT4bF = 0;	
+        -:   94:
+        -:   95:    // The variables below came from the cardtest4.c example provided 	
+        2:   96:    int handPos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;	
+        2:   97:	int k[10] = {adventurer, embargo, village, 
+        -:   98:				minion, mine, cutpurse, 
+        -:   99:				sea_hag, tribute, smithy, 
+        -:  100:				council_room};	
+        -:  101:
+        -:  102:	/* --- START TEST --- */
+        -:  103:
+        2:  104:	printf("\n--------------------------------------------------------------------\n");
+call    0 returned 100%
+        2:  105:	printf("------------------- STARTING SMITHY RANDOM TESTS ------------------\n");
+call    0 returned 100%
+        2:  106:	printf("--------------------------------------------------------------------");	
+call    0 returned 100%
+        -:  107:
+     3002:  108:	for (i = 0; i < 1500; i++) {
+branch  0 taken 99%
+branch  1 taken 1% (fallthrough)
+        -:  109:
+        -:  110:		/* ---------- BEFORE CARD IS PLAYED ---------- */
+     3000:  111:		printf("\n\n********** Iteration %d **********\n", i+1);
+call    0 returned 100%
+        -:  112:
+        -:  113:		// Random seed for cardEffect()
+     3000:  114:		int seed = rand(); 
+call    0 returned 100%
+        -:  115:
+        -:  116:		// Get a random number of players between MIN and MAX_PLAYERS
+        -:  117:		// https://www.geeksforgeeks.org/generating-random-number-range-c/
+     3000:  118:		int numPlayers = (rand() % (MAX_PLAYERS - MIN_PLAYERS + 1)) + MIN_PLAYERS;	
+call    0 returned 100%
+        -:  119:
+        -:  120:		// Initialize a game state and player cards
+     3000:  121:		initializeGame(numPlayers, k, seed, &testState);	
+call    0 returned 100%
+        -:  122:
+        -:  123:		// Pick random player to play Smithy
+     3000:  124:		int currentPlayer = rand() % numPlayers;
+call    0 returned 100%
+        -:  125:
+        -:  126:		// Number of cards in currentPlayer's hand before playing Smithy
+     3000:  127:		testState.handCount[currentPlayer] = rand() % MAX_HAND;
+call    0 returned 100%
+     3000:  128:		int startingHandCount = testState.handCount[currentPlayer];
+        -:  129:		// Expected number of cards in currentPlayer's hand after playing Smithy
+     3000:  130:		int expectedHandCount = startingHandCount + 3;	
+        -:  131:		// Number of cards in currentPlayer's deck before playing Smithy	
+     3000:  132:		testState.deckCount[currentPlayer] = rand() % MAX_DECK;
+call    0 returned 100%
+        -:  133:
+     3000:  134:		int startingDeckCount = testState.deckCount[currentPlayer]; 
+        -:  135:		/* Expected number of cards in currentPlayer's deck after playing Smithy
+        -:  136:		 * This is -4 instead of -3 because of the discardCard() in addition 
+        -:  137:		 * to moving 3 cards from deck to hand	
+        -:  138:		 */ 	
+     3000:  139:		int expectedDeckCount = startingDeckCount - 4; 	
+        -:  140:
+        -:  141:		// Starting / ending handCount and deckCount for other players		
+     3000:  142:		int otherPlayerStartingHandCount[numPlayers-1];	
+     3000:  143:		int otherPlayerStartingDeckCount[numPlayers-1];
+     3000:  144:		int otherPlayerEndingHandCount[numPlayers-1];
+     3000:  145:		int otherPlayerEndingDeckCount[numPlayers-1];			
+        -:  146:
+        -:  147:		// Randomize the starting handCount and deckCount for the other players
+    11928:  148:		for (j = 0; j < numPlayers; j++) {
+branch  0 taken 75%
+branch  1 taken 25% (fallthrough)
+     8928:  149:			if (j != currentPlayer) {			
+branch  0 taken 66% (fallthrough)
+branch  1 taken 34%
+     5928:  150:				otherPlayerStartingHandCount[j] = rand() % MAX_HAND; 
+call    0 returned 100%
+     5928:  151:				otherPlayerStartingDeckCount[j] = rand() % MAX_DECK;
+call    0 returned 100%
+        -:  152:			}
+        -:  153:		}	
+        -:  154:
+        -:  155:		// This determines the supply of victory cards before Smithy is played
+    12000:  156:		for ( j = estate; j < copper; j++ ) {
+branch  0 taken 75%
+branch  1 taken 25% (fallthrough)
+     9000:  157:			victoryBefore += testState.supplyCount[j];
+        -:  158:		}
+        -:  159:
+        -:  160:		// This determines the supply of kingdom cards before Smithy is played 	
+    33000:  161:		for ( j = 0; j < 10; j++ ) {
+branch  0 taken 91%
+branch  1 taken 9% (fallthrough)
+    30000:  162:			n = k[i];
+    30000:  163:			kingdomBefore += testState.supplyCount[n];
+        -:  164:		}
+        -:  165:
+        -:  166:		/* ---------- PLAY SMITHY ---------- */
+     3000:  167:		cardEffect(smithy, choice1, choice2, choice3, &testState, handPos, &bonus);
+call    0 returned 100%
+        -:  168:
+        -:  169:		/* ---------- AFTER CARD IS PLAYED ---------- */
+        -:  170:
+     3000:  171:		printf("\n------------------------------ Test 1 -----------------------------\n\n");
+call    0 returned 100%
+     3000:  172:		printf("Expected: Current player received exactly 3 cards.\n");
+call    0 returned 100%
+     3000:  173:		printf("Actual: ");
+call    0 returned 100%
+     3000:  174:		myAssert(testState.handCount[currentPlayer], expectedHandCount);
+call    0 returned 100%
+        -:  175:
+     3000:  176:		if (testState.handCount[currentPlayer] == expectedHandCount){
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  177:			numT1P++;
+     3000:  178:		} else if (testState.handCount[currentPlayer] != expectedHandCount) {
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+     3000:  179:			numT1F++;
+        -:  180:		}
+        -:  181:
+     3000:  182:		printf("\n------------------------------ Test 2 -----------------------------\n\n");
+call    0 returned 100%
+     3000:  183:		printf("Expected: Cards came from current player's deck.\n");
+call    0 returned 100%
+     3000:  184:		printf("Actual: ");
+call    0 returned 100%
+     3000:  185:		myAssert(testState.deckCount[currentPlayer], expectedDeckCount);
+call    0 returned 100%
+        -:  186:
+     3000:  187:		if (testState.deckCount[currentPlayer] == expectedDeckCount){
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  188:			numT2P++;
+     3000:  189:		} else if (testState.deckCount[currentPlayer] != expectedDeckCount) {
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+     3000:  190:			numT2F++;
+        -:  191:		}
+        -:  192:
+     3000:  193:		printf("\n------------------------------ Test 3 -----------------------------\n\n");
+call    0 returned 100%
+     3000:  194:		printf("Expected: No state changes to other players.\n");
+call    0 returned 100%
+        -:  195:
+        -:  196:		// Determine the handCount and deckCount for other players
+    11928:  197:		for (j = 0; j < numPlayers; j++) {
+branch  0 taken 75%
+branch  1 taken 25% (fallthrough)
+     8928:  198:			if (j != currentPlayer) {
+branch  0 taken 66% (fallthrough)
+branch  1 taken 34%
+     5928:  199:				printf("Actual:\n");	
+call    0 returned 100%
+     5928:  200:				printf("    handCount test: ");		
+call    0 returned 100%
+     5928:  201:				otherPlayerEndingHandCount[j] = testState.handCount[j];
+     5928:  202:				myAssert(otherPlayerStartingHandCount[j], otherPlayerEndingHandCount[j]);
+call    0 returned 100%
+        -:  203:				
+     5928:  204:				if (otherPlayerStartingHandCount[j] == otherPlayerEndingHandCount[j]){
+branch  0 taken 1% (fallthrough)
+branch  1 taken 99%
+        7:  205:					numT3aP++;
+     5921:  206:				} else if (otherPlayerStartingHandCount[j] != otherPlayerEndingHandCount[j]) {
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+     5921:  207:					numT3aF++;
+        -:  208:				}
+        -:  209:
+     5928:  210:				printf("    deckCount test: ");
+call    0 returned 100%
+     5928:  211:				otherPlayerEndingDeckCount[j] = testState.deckCount[j];
+     5928:  212:				myAssert(otherPlayerStartingDeckCount[i], otherPlayerEndingDeckCount[i]);
+call    0 returned 100%
+        -:  213:				
+     5928:  214:				if (otherPlayerStartingDeckCount[j] == otherPlayerEndingDeckCount[j]){
+branch  0 taken 1% (fallthrough)
+branch  1 taken 99%
+       15:  215:					numT3bP++;
+     5913:  216:				} else if (otherPlayerStartingDeckCount[j] != otherPlayerEndingDeckCount[j]) {
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+     5913:  217:					numT3bF++;
+        -:  218:				}
+        -:  219:			}
+        -:  220:		}
+        -:  221:
+     3000:  222:		printf("\n------------------------------ Test 4 -----------------------------\n\n");
+call    0 returned 100%
+     3000:  223:		printf("Expected: No state changes to victory or kingdom piles.\n");
+call    0 returned 100%
+        -:  224:
+        -:  225:		/* This determines the supply of victory cards before Smithy is played */
+    12000:  226:		for ( j = estate; j < copper; j++ ){
+branch  0 taken 75%
+branch  1 taken 25% (fallthrough)
+     9000:  227:			victoryAfter += testState.supplyCount[i];
+        -:  228:		}
+        -:  229:
+     3000:  230:		printf("Actual:\n");
+call    0 returned 100%
+     3000:  231:		printf("    Victory pile: ");
+call    0 returned 100%
+     3000:  232:		myAssert(victoryBefore, victoryAfter);
+call    0 returned 100%
+        -:  233:
+     3000:  234:		if (victoryBefore == victoryAfter) {
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  235:			numT4aP++;
+     3000:  236:		} else if (victoryBefore != victoryAfter) {
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+     3000:  237:			numT4aF++;
+        -:  238:		}
+        -:  239:
+        -:  240:		/* This determines the supply of kingdom cards before Smithy is played */	
+    33000:  241:		for ( j = 0; j < 10; j++ ){
+branch  0 taken 91%
+branch  1 taken 9% (fallthrough)
+    30000:  242:			n = k[i];
+    30000:  243:			kingdomAfter += testState.supplyCount[n];
+        -:  244:		}
+        -:  245:
+     3000:  246:		printf("    Kingdom pile: ");
+call    0 returned 100%
+     3000:  247:		myAssert(kingdomBefore, kingdomAfter);
+call    0 returned 100%
+        -:  248:
+     3000:  249:		if (kingdomBefore == kingdomAfter) {
+branch  0 taken 5% (fallthrough)
+branch  1 taken 95%
+      148:  250:			numT4bP++;
+     2852:  251:		} else if (kingdomBefore != kingdomAfter) {
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+     2852:  252:			numT4bF++;
+        -:  253:		}		
+        -:  254:
+        -:  255:	}
+        -:  256:
+        2:  257:	printf("------------------ TOTAL PASSED / FAILED TEST CASES ------------------\n\n");
+call    0 returned 100%
+        2:  258:	printf("Test 1 - PASSED: %d\n", numT1P);
+call    0 returned 100%
+        2:  259:	printf("Test 1 - FAILED: %d\n", numT1F);
+call    0 returned 100%
+        2:  260:	printf("Test 2 - PASSED: %d\n", numT2P);
+call    0 returned 100%
+        2:  261:	printf("Test 2 - FAILED: %d\n", numT2F);
+call    0 returned 100%
+        2:  262:	printf("Test 3a - PASSED: %d\n", numT3aP);
+call    0 returned 100%
+        2:  263:	printf("Test 3a - FAILED: %d\n", numT3aF);	
+call    0 returned 100%
+        2:  264:	printf("Test 3b - PASSED: %d\n", numT3bP);
+call    0 returned 100%
+        2:  265:	printf("Test 3b - FAILED: %d\n", numT3bF);
+call    0 returned 100%
+        2:  266:	printf("Test 4a - PASSED: %d\n", numT4aP);
+call    0 returned 100%
+        2:  267:	printf("Test 4a - FAILED: %d\n", numT4aF);	
+call    0 returned 100%
+        2:  268:	printf("Test 4b - PASSED: %d\n", numT4bP);
+call    0 returned 100%
+        2:  269:	printf("Test 4b - FAILED: %d\n", numT4bF);		
+call    0 returned 100%
+        -:  270:
+        -:  271:
+        2:  272:	printf("\n--------------------------------------------------------------------\n");
+call    0 returned 100%
+        2:  273:	printf("------------------------- TESTING COMPLETE -------------------------\n");
+call    0 returned 100%
+        2:  274:	printf("--------------------------------------------------------------------\n\n");	
+call    0 returned 100%
+        -:  275:
+        2:  276:	return 0;
+        -:  277:}
+        -:  278:
+        -:  279:
+        -:  280:
+        -:  281:
+        -:  282:
+        -:  283:
+        -:  284:
+        -:  285:
+        -:  286:
+        -:  287:
+        -:  288:
+        -:  289:
+        -:  290:
+        -:  291:
+        -:  292:
+        -:  293:
+        -:  294:
+        -:  295:
+        -:  296:
+        -:  297:
+        -:  298:
+        -:  299:
+        -:  300:
+        -:  301:
+        -:  302:
+        -:  303:
+        -:  304:
