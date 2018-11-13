@@ -131,7 +131,7 @@ int main() {
 
 		// Num cards in currentPlayer's discard pile before playing Smithy
         testState.discardCount[currentPlayer] = floor(Random() * MAX_DECK);
-        int discCount = testState.discardCount[currentPlayer];
+        //int discCount = testState.discardCount[currentPlayer];
         printf("currentPlayer discardCount: %d\n", testState.discardCount[currentPlayer]);
 
 		// Expected number of cards in currentPlayer's deck after playing Smithy
@@ -149,13 +149,14 @@ int main() {
 		int otherPlayerStartingDeckCount[numPlayers];
 		int otherPlayerExpectedHandCount[numPlayers];	
 		int otherPlayerExpectedDeckCount[numPlayers];
+		//int otherPlayerStartingDiscardCount[numPlayers];
 
 		// Starting handCount, deckCount, discardCount for the other players
 		for (j = 0; j < numPlayers; j++) {
 			if (j != currentPlayer) {	
 				// discard count
 				testState.discardCount[j] = floor(Random() * MAX_DECK);
-				otherPlayerStartingDiscardCount[j] = testState.discardCount[j];					
+				//otherPlayerStartingDiscardCount[j] = testState.discardCount[j];					
 				//testState.handCount[j] = rand() % MAX_HAND;
 				otherPlayerStartingHandCount[j] = testState.handCount[j]; 
 				otherPlayerExpectedHandCount[j] = otherPlayerStartingHandCount[j];

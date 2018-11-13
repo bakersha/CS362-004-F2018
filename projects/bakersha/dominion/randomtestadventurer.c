@@ -75,6 +75,11 @@ int main() {
 	int tcFail[5] 					= {0};	// Holds failed TC count
 	int iterFailContainer[40000] 	= {0};  // Holds iterations that had failed TCs
 	int failCount 	  				= 0;	// Index for iterFailContainer[]	
+	int currentPlayer 				= 0;	
+	int seed 						= 0;	
+	int numPlayers 					= 0;
+	int startingHandCount 			= 0;
+	int startingDeckCount 			= 0;
 
     // The variables below came from the cardtest4.c example provided 	
     int handPos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;	
@@ -89,7 +94,7 @@ int main() {
 	printf("----------------- STARTING ADVENTURER RANDOM TESTS -----------------\n");
 	printf("--------------------------------------------------------------------");	
 
-	for (i = 0; i < 15; i++) {
+	for (i = 0; i < 15000; i++) {
 
 		/* ---------- BEFORE CARD IS PLAYED ---------- */
 		printf("\n\n********** Iteration %d **********\n", i);
@@ -98,20 +103,20 @@ int main() {
 		// Set up Random() from rngs.c
 		// Using numbers from testDrawCard.c
 		SelectStream(2);
-		int seed = rand() + 1;
+		seed = rand() + 1;
 
 		printf("Seed: %d\n", seed); 
 
 		// Get a random number of players between MIN and MAX_PLAYERS
 		// https://www.geeksforgeeks.org/generating-random-number-range-c/
-		int numPlayers = (rand() % (MAX_PLAYERS - MIN_PLAYERS + 1)) + MIN_PLAYERS;	
+		numPlayers = (rand() % (MAX_PLAYERS - MIN_PLAYERS + 1)) + MIN_PLAYERS;	
 		printf("numPlayers: %d\n", numPlayers);
 
 		// Initialize a game state and player cards
 		initializeGame(numPlayers, k, seed, &testState);	
 
 		// Get random currentPlayer 
-		int currentPlayer = rand() % numPlayers;
+		currentPlayer = rand() % numPlayers;
 		testState.whoseTurn = currentPlayer;
 		printf("currentPlayer: %d\n", currentPlayer);
 
@@ -126,8 +131,8 @@ int main() {
 
 		// Number of cards in currentPlayer's hand before playing Adventurer
 		testState.handCount[currentPlayer] = floor(Random() * MAX_HAND);
-		int startingHandCount = testState.handCount[currentPlayer];
-		//printf("currentPlayer startingHandCount: %d\n", startingHandCount);		
+		startingHandCount = testState.handCount[currentPlayer];
+		printf("currentPlayer startingHandCount: %d\n", startingHandCount);		
 
 		// Expected number of cards in currentPlayer's hand after playing Adventurer
 		//int expectedHandCount = startingHandCount + 2;	
@@ -135,8 +140,8 @@ int main() {
 
 		// Number of cards in currentPlayer's deck before playing Adventurer	
 		testState.deckCount[currentPlayer] = floor(Random() * MAX_DECK);
-		//int startingDeckCount = testState.deckCount[currentPlayer];
-		//printf("currentPlayer startingDeckCount: %d\n", startingDeckCount); 
+		startingDeckCount = testState.deckCount[currentPlayer];
+		printf("currentPlayer startingDeckCount: %d\n", startingDeckCount); 
 
 		// Non-random version
 		//int startingDeckCount = testState.deckCount[currentPlayer];				
@@ -144,7 +149,7 @@ int main() {
 		// Num cards in currentPlayer's discard pile before playing Smithy
         testState.discardCount[currentPlayer] = floor(Random() * MAX_DECK);
         //int discCount = testState.discardCount[currentPlayer];
-        //printf("currentPlayer discardCount: %d\n", testState.discardCount[currentPlayer]);
+        printf("currentPlayer discardCount: %d\n", testState.discardCount[currentPlayer]);
 
 		// Determine num treasure cards in currentPlayer's hand before playing card
         for (j = 0; j < startingHandCount; j++) {
@@ -163,20 +168,19 @@ int main() {
         printf("    Silver: %d\n", silverBefore);
         printf("    Gold: %d\n\n", goldBefore);
 
-		// Starting / ending handCount and deckCount for other players		
 		int otherPlayerStartingHandCount[numPlayers];	
-		int otherPlayerStartingDeckCount[numPlayers];
-		int otherPlayerStartingDiscardCount[numPlayers];
+		int otherPlayerStartingDeckCount[numPlayers];	
+		int otherPlayerStartingDiscardCount[numPlayers];		        
 		
 		// Starting handCount and deckCount for the other players 
 		for (j = 0; j < numPlayers; j++) {
 			if (j != currentPlayer) {			
 				// discard count
-				testState.discardCount[j] = floor(Random() * MAX_DECK);
+				//testState.discardCount[j] = floor(Random() * MAX_DECK);
 				otherPlayerStartingDiscardCount[j] = testState.discardCount[j];
-				//testState.handCount[j] = rand() % MAX_HAND;
+				//testState.handCount[j] = floor(Random() * MAX_DECK);
 				otherPlayerStartingHandCount[j] = testState.handCount[j]; 
-				//testState.deckCount[j] = rand() % MAX_HAND;
+				//testState.deckCount[j] = floor(Random() * MAX_HAND);
 				otherPlayerStartingDeckCount[j] = testState.deckCount[j];
 				printf("Player %d startingHandCount: %d\n", j, otherPlayerStartingHandCount[j]);
 				printf("Player %d starting discardCount: %d\n", j, testState.discardCount[j]);
@@ -200,7 +204,9 @@ int main() {
 
 		printf("\n------------------------------ Test 1 -----------------------------\n\n");
 		printf("Expected: Current player draws until 2 treasure drawn.\n");
-
+		printf("CurrentPlayer handCount: %d\n", testState.handCount[currentPlayer]);
+		printf("CurrentPlayer deckCount: %d\n", testState.deckCount[currentPlayer]);
+		printf("CurrentPlayer discardCount: %d\n", testState.discardCount[currentPlayer]);
 		// Determine num treasure cards in currentPlayer's hand after playing card
         for (j = 0; j < testState.handCount[currentPlayer]; j++) {
         	if (testState.hand[currentPlayer][j] == copper) {
@@ -227,7 +233,7 @@ int main() {
         }
 
 		printf("\n------------------------------ Test 2 -----------------------------\n\n");
-		printf("Expected: No state change to other players");		
+		printf("Expected: No state change to other players\n");		
 		// Determine the handCount and deckCount for other players
 		for (j = 0; j < numPlayers; j++) {
 			if (j != currentPlayer) {
