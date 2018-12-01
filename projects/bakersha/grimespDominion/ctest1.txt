@@ -1,0 +1,53 @@
+
+---------------------- Smithy Unit Tests ---------------------
+
+-------------------------- Starting Test 1 -------------------------
+--- 1. Current player should receive exactly 3 cards ---------------
+--- 2. The cards should come from the current player's pile --------
+--------------------------------------------------------------------
+
+Current player (0) handCount before Smithy: 5
+Current player (0) deckCount before Smithy: 5
+Current player (0) handCount after Smithy: 6, expected: 8
+TEST FAILED!
+Current player (0) deckCount after Smithy: 3, expected: 1
+TEST FAILED!
+
+-------------------------- Starting Test 3 -------------------------
+---------------- No state change to other players ------------------
+--------------------------------------------------------------------
+
+Player 1 handCount before Smithy: 0
+Player 1 handCount after Smithy: 0
+TEST PASSED!
+Player 2 handCount before Smithy: 0
+Player 2 handCount after Smithy: 0
+TEST PASSED!
+Player 3 handCount before Smithy: 0
+Player 3 handCount after Smithy: 0
+TEST PASSED!
+Player 1 deckCount before Smithy: 10
+Player 1 deckCount after Smithy: 10
+TEST PASSED!
+Player 2 deckCount before Smithy: 10
+Player 2 deckCount after Smithy: 10
+TEST PASSED!
+Player 3 deckCount before Smithy: 10
+Player 3 deckCount after Smithy: 10
+TEST PASSED!
+
+-------------------------- Starting Test 4 -------------------------
+----------- No state changes to victory or kingdom piles -----------
+--------------------------------------------------------------------
+
+Victory pile count before Smithy: 36
+Victory pile count after Smithy: 36
+TEST PASSED!
+Kingdom pile count before Smithy: 100
+Kingdom pile count after Smithy: 100
+TEST PASSED!
+
+--------------------------------------------------------------------
+------------------------- TESTING COMPLETE -------------------------
+--------------------------------------------------------------------
+

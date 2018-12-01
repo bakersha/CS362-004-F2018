@@ -1,0 +1,240 @@
+
+------------------------ getCost() Unit Tests ----------------------
+
+-------------------------- Starting Test 1 -------------------------
+------ Verifying the return values for every card that exists ------
+--------------------------------------------------------------------
+
+Cost of card# 0 is 0, expected is 0
+Cost of card# 1 is 2, expected is 2
+Cost of card# 2 is 5, expected is 5
+Cost of card# 3 is 8, expected is 8
+Cost of card# 4 is 0, expected is 0
+Cost of card# 5 is 3, expected is 3
+Cost of card# 6 is 6, expected is 6
+Cost of card# 7 is 6, expected is 6
+Cost of card# 8 is 5, expected is 5
+Cost of card# 9 is 4, expected is 4
+Cost of card# 10 is 4, expected is 4
+Cost of card# 11 is 5, expected is 5
+Cost of card# 12 is 4, expected is 4
+Cost of card# 13 is 4, expected is 4
+Cost of card# 14 is 3, expected is 3
+Cost of card# 15 is 4, expected is 4
+Cost of card# 16 is 3, expected is 3
+Cost of card# 17 is 5, expected is 5
+Cost of card# 18 is 3, expected is 3
+Cost of card# 19 is 5, expected is 5
+Cost of card# 20 is 3, expected is 3
+Cost of card# 21 is 4, expected is 4
+Cost of card# 22 is 2, expected is 2
+Cost of card# 23 is 5, expected is 5
+Cost of card# 24 is 4, expected is 4
+Cost of card# 25 is 4, expected is 4
+Cost of card# 26 is 4, expected is 4
+
+-------------------------- Starting Test 2 -------------------------
+------ Verifying the return values for cards that don't exist ------
+--------------------------------------------------------------------
+
+Cost of card# -1 is -1, expected is -1
+Cost of card# 27 is -1, expected is -1
+The input card number is 0.5. Int should truncate to 0.
+Cost of card# 0 is 0, expected is 0
+
+-------------------------- Starting Test 3 -------------------------
+-- Verifying return values when listed out of order or duplicated --
+--------------------------------------------------------------------
+
+Cost of card# 4 is 0, expected is 0
+Cost of card# 7 is 6, expected is 6
+Cost of card# 26 is 4, expected is 4
+Cost of card# 13 is 4, expected is 4
+Cost of card# 3 is 8, expected is 8
+Cost of card# 7 is 6, expected is 6
+
+--------------------------------------------------------------------
+---------------- ALL TESTS PASSED! TESTING COMPLETE ----------------
+--------------------------------------------------------------------
+
+
+---------------------- isGameOver() Unit Tests ---------------------
+
+-------------------------- Starting Test 1 -------------------------
+------- Test various input values for the first if statement -------
+--------------------------------------------------------------------
+
+Test input for province supply: 0, expected rtn val: 1, actual: 1
+Test input for province supply: -1, expected rtn val: 0, actual: 0
+Test input for province supply: 0.5, expected rtn val: 1, actual: 1
+Test input for province supply: 1, expected rtn val: 0, actual: 0
+Test input for province supply: 501, expected rtn val: 0, actual: 0
+
+-------------------------- Starting Test 2 -------------------------
+--- Test supply count for various numbers of cards and card types --
+--------------------------------------------------------------------
+
+All supplyCount set to 5, expected rtn val: 0, actual: 0
+First 2 supplyCount set to 0, expected rtn val: 0, actual: 0
+First 3 supplyCount set to 0, expected rtn val: 1, actual: 1
+All supplyCount set to 0, expected rtn val: 1, actual: 1
+Last 2 supplyCount set to 0, expected rtn val: 0, actual: 0
+Last 3 supplyCount set to 0, expected rtn val: 1, actual: 1
+3 middle supplyCount set to 0, expected rtn val: 1, actual: 1
+
+--------------------------------------------------------------------
+---------------- ALL TESTS PASSED! TESTING COMPLETE ----------------
+--------------------------------------------------------------------
+
+
+---------------------- supplyCount() Unit Tests --------------------
+
+-------------------------- Starting Test 1 -------------------------
+--------------- Test for all cards at various amounts --------------
+--------------------------------------------------------------------
+
+Supply count for card 0. Expected: 2, actual: 2
+Supply count for card 1. Expected: 1, actual: 1
+Supply count for card 2. Expected: 2, actual: 2
+Supply count for card 3. Expected: 3, actual: 3
+Supply count for card 4. Expected: 2, actual: 2
+Supply count for card 5. Expected: 5, actual: 5
+Supply count for card 6. Expected: 2, actual: 2
+Supply count for card 7. Expected: 1, actual: 1
+Supply count for card 8. Expected: 2, actual: 2
+Supply count for card 9. Expected: 3, actual: 3
+Supply count for card 10. Expected: 2, actual: 2
+Supply count for card 11. Expected: 1, actual: 1
+Supply count for card 12. Expected: 2, actual: 2
+Supply count for card 13. Expected: 1, actual: 1
+Supply count for card 14. Expected: 2, actual: 2
+Supply count for card 15. Expected: 3, actual: 3
+Supply count for card 16. Expected: 2, actual: 2
+Supply count for card 17. Expected: 1, actual: 1
+Supply count for card 18. Expected: 2, actual: 2
+Supply count for card 19. Expected: 1, actual: 1
+Supply count for card 20. Expected: 2, actual: 2
+Supply count for card 21. Expected: 3, actual: 3
+Supply count for card 22. Expected: 2, actual: 2
+Supply count for card 23. Expected: 1, actual: 1
+Supply count for card 24. Expected: 2, actual: 2
+Supply count for card 25. Expected: 5, actual: 5
+
+-------------------------- Starting Test 2 -------------------------
+----------------- Test for cards that do not exist -----------------
+--------------------------------------------------------------------
+
+Supply count for card 26. Expected: 0, actual: 0
+Supply count for card -1. Expected: 0, actual: 0
+Supply count for card 45. Expected: 0, actual: 0
+
+--------------------------------------------------------------------
+---------------- ALL TESTS PASSED! TESTING COMPLETE ----------------
+--------------------------------------------------------------------
+
+
+---------------------- whoseTurn() Unit Tests --------------------
+
+--------------------------- Starting Test --------------------------
+------- Verify correct number is returned when player changes ------
+--------------------------------------------------------------------
+
+Current player expected: 0, current player returned: 0
+Current player expected: 1, current player returned: 1
+Current player expected: 2, current player returned: 2
+Current player expected: 3, current player returned: 3
+
+--------------------------------------------------------------------
+---------------- ALL TESTS PASSED! TESTING COMPLETE ----------------
+--------------------------------------------------------------------
+
+
+---------------------- Smithy Unit Tests ---------------------
+
+-------------------------- Starting Test 1 -------------------------
+--- 1. Current player should receive exactly 3 cards ---------------
+--- 2. The cards should come from the current player's pile --------
+--------------------------------------------------------------------
+
+Current player (0) handCount before Smithy: 5
+Current player (0) deckCount before Smithy: 5
+Current player (0) handCount after Smithy: 6, expected: 8
+TEST FAILED!
+Current player (0) deckCount after Smithy: 3, expected: 1
+TEST FAILED!
+
+-------------------------- Starting Test 3 -------------------------
+---------------- No state change to other players ------------------
+--------------------------------------------------------------------
+
+Player 1 handCount before Smithy: 0
+Player 1 handCount after Smithy: 0
+TEST PASSED!
+Player 2 handCount before Smithy: 0
+Player 2 handCount after Smithy: 0
+TEST PASSED!
+Player 3 handCount before Smithy: 0
+Player 3 handCount after Smithy: 0
+TEST PASSED!
+Player 1 deckCount before Smithy: 10
+Player 1 deckCount after Smithy: 10
+TEST PASSED!
+Player 2 deckCount before Smithy: 10
+Player 2 deckCount after Smithy: 10
+TEST PASSED!
+Player 3 deckCount before Smithy: 10
+Player 3 deckCount after Smithy: 10
+TEST PASSED!
+
+-------------------------- Starting Test 4 -------------------------
+----------- No state changes to victory or kingdom piles -----------
+--------------------------------------------------------------------
+
+Victory pile count before Smithy: 36
+Victory pile count after Smithy: 36
+TEST PASSED!
+Kingdom pile count before Smithy: 100
+Kingdom pile count after Smithy: 100
+TEST PASSED!
+
+--------------------------------------------------------------------
+------------------------- TESTING COMPLETE -------------------------
+--------------------------------------------------------------------
+
+
+----------------------- Adventurer Unit Tests ----------------------
+
+-------------------------- Starting Test 1 -------------------------
+----------------- Draw card until 2 treasure found -----------------
+--------------------------------------------------------------------
+
+Playing adventurer card ...
+Expected top card in hand: enum 5, actual: enum 4
+TEST FAILED!
+
+------------------------------ Test 2 ------------------------------
+---------------- Drawn cards are from player's deck ----------------
+--------------------------------------------------------------------
+
+Deck count before playing adventurer: 5
+Expected deck count after: 2, actual: 0
+TEST FAILED!
+
+--------------------------------------------------------------------
+------------------------- TESTING COMPLETE -------------------------
+--------------------------------------------------------------------
+
+
+---------------------- Council Room Unit Tests ---------------------
+
+-------------------------- Starting Test 1 -------------------------
+----------------- Draw card until 2 treasure found -----------------
+--------------------------------------------------------------------
+
+------- No tests performed. -------File 'dominion.c'
+Lines executed:31.06% of 573
+Branches executed:34.60% of 422
+Taken at least once:25.36% of 422
+Calls executed:15.63% of 96
+Creating 'dominion.c.gcov'
+
